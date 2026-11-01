@@ -17,8 +17,12 @@ final class VillageCheck {
         AABB box = new AABB(
                 center.getX() - horizontalRadius, center.getY() - verticalRadius, center.getZ() - horizontalRadius,
                 center.getX() + horizontalRadius, center.getY() + verticalRadius, center.getZ() + horizontalRadius);
+        EntityType<?> villager = RaidMobs.get("villager");
+        if (villager == null) {
+            return 0;
+        }
         List<Entity> found = level.getEntities((Entity) null, box,
-                entity -> entity.getType() == EntityType.VILLAGER && entity.isAlive());
+                entity -> entity.getType() == villager && entity.isAlive());
         return found.size();
     }
 }

@@ -154,18 +154,18 @@ final class ActiveRaid {
         phaseTicks = 0;
         raiders.clear();
 
-        spawnGroup(level, EntityType.PILLAGER, 3 + currentWave + omenLevel);
+        spawnGroup(level, "pillager", 3 + currentWave + omenLevel);
         if (currentWave >= 2) {
-            spawnGroup(level, EntityType.VINDICATOR, currentWave - 1 + omenLevel / 2);
+            spawnGroup(level, "vindicator", currentWave - 1 + omenLevel / 2);
         }
         if (currentWave >= 3) {
-            spawnGroup(level, EntityType.WITCH, 1);
+            spawnGroup(level, "witch", 1);
         }
         if (currentWave >= 4) {
-            spawnGroup(level, EntityType.EVOKER, currentWave == 5 ? 2 : 1);
+            spawnGroup(level, "evoker", currentWave == 5 ? 2 : 1);
         }
         if (currentWave == 3 || currentWave == 5) {
-            spawnGroup(level, EntityType.RAVAGER, currentWave == 5 && omenLevel >= 3 ? 2 : 1);
+            spawnGroup(level, "ravager", currentWave == 5 && omenLevel >= 3 ? 2 : 1);
         }
 
         waveStartCount = raiders.size();
@@ -189,16 +189,20 @@ final class ActiveRaid {
                 + " besiegt. Die naechste Welle naht.");
     }
 
-    private void spawnGroup(ServerLevel level, EntityType<?> type, int count) {
+    private void spawnGroup(ServerLevel level, String typeId, int count) {
         for (int i = 0; i < count; i++) {
-            Entity entity = spawnOne(level, type);
+            Entity entity = spawnOne(level, typeId);
             if (entity != null) {
                 raiders.add(entity.getUUID());
             }
         }
     }
 
-    private Entity spawnOne(ServerLevel level, EntityType<?> type) {
+    private Entity spawnOne(ServerLevel level, String typeId) {
+        EntityType<?> type = RaidMobs.get(typeId);
+        if (type == null) {
+            return null;
+        }
         for (int attempt = 0; attempt < 12; attempt++) {
             double angle = random.nextDouble() * Math.PI * 2.0;
             double distance = 24.0 + random.nextDouble() * 16.0;
@@ -216,9 +220,9 @@ final class ActiveRaid {
             entity.setPos(x + 0.5, y, z + 0.5);
             if (entity instanceof Mob mob) {
                 mob.setPersistenceRequired();
-                if (type == EntityType.PILLAGER) {
+                if ("pillager".equals(typeId)) {
                     mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
-                } else if (type == EntityType.VINDICATOR) {
+                } else if ("vindicator".equals(typeId)) {
                     mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
                 }
             }
